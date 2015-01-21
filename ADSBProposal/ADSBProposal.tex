@@ -1,0 +1,38 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\author{Isabelle Santos}
+\title{Preliminary ADS-B Project Proposal}
+\usepackage{url}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\begin{document}
+
+\maketitle
+\begin{abstract}
+ADS-B is becoming a more and more widespread in the context of increasing air traffic, and under the pressure of governmental and international aviation agencies, such as the Canadian CAA. With the development of ADS-B new security issues arise that must be reduced, since human lives are at stake. 
+\end{abstract}
+
+\section{Context}
+Automatic Dependent Surveillance - Broadcast, or ADS-B is a technology in which an aircraft determines its position using GNSS and periodically broadcasts it without any input from the pilot. This makes it possible to track the plane without using costly radars. \cite{faaAdsbArchitecture, radarReplacement, faaStandardOrder}
+The information broadcast by aircraft is typically received by air traffic control centres on the ground. The information can also be received by other aircraft for separation purposes. Other types of information can be transmitted using ADS-B such as weather reports and terrain alerts. \cite{faaAdsbServices, Kunzi09, trigAvionicsSupport}
+
+ADS-B is an essential element in the SESAR project in Europe and the NextGen project in the US, as widespread implementation of ADS-B would make air traffic much safer, and increase the airspace capacity \cite{efficiencyGains}. Therefore, the EASA and the FAA are progressively making ADS-B equipment mandatory for certain commercial flights. Other countries such as Australia or Canada already have widespread ADS-B coverage \cite{australiaCoverage}
+
+However, there are safety \cite{aopaseminar} and security \cite{adsbSpoofing, adsbSpoofingVid, faaHackersDisagree, Costin} issues related to the use of ADS-B. 
+
+\section{Project Description}
+This project consists in the design of an attack of the ADS-B protocol in order to demonstrate specific vulnerabilities of the system. 
+
+Further details concerning this project are still to be determined. 
+
+%\section{Related Work}
+
+\section*{Conclusion}
+This project combines ad-hoc networks, and security problematics, making it relevant in the context of cyber-physical systems. 
+
+\bibliographystyle{plain}
+\bibliography{ProjectRefs}
+
+\end{document}
