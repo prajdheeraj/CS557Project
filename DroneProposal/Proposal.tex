@@ -1,0 +1,57 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\author{Isabelle Santos}
+\title{Preliminary Drone Tracking Project Proposal}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\begin{document}
+
+\maketitle
+\begin{abstract}
+The safety pilot of a drone can almost only rely on their eyes to determine the state of a drone they are monitoring. In the context for instance of a search and rescue mission, many drones could be involved, and the pilot may lose sight of the drone they are monitoring. This project proposal describes briefly the possibility of designing a smartphone app to monitor and control a fleet of drones with an interface similar to that of GoogleSky.
+\end{abstract}
+
+\section{Context}
+Paparazzi is a free and open-source software project \cite{Paparazzi} comprising the hardware and software necessary deploy a drone autopilot system. Paparazzi has been used by universities, private companies and drone enthusiasts. 
+
+Paparazzi is articulated around a ground control system (GCS) and the actual drone. The drone is composed of modules for receiving orders from the ground station, modules for sending status reports to the ground station, and flight control systems and actuators. The GCS is generally a computer running the Paparazzi software, with an antenna to emit and receive messages to and from the drone and a standard RC transmitter. 
+
+During the flight of a drone, there are two pilots:
+\begin{itemize}
+\item The GCS operator inputs flight parameters and see the flight data in real-time
+\item The safety pilot observes the flight and holds ready to take command of the drone in case anything unexpected happens. 
+\end{itemize}
+
+However, this system has several limitations. The safety pilot communicates with the GCS operator (for instance by talkie-walkie) in order to get the drone flight data. Therefore, the safety pilot does not have real-time information and the transmission can be of poor quality, resulting in incomprehensions. Furthermore, the safety pilot has no way of easily finding the position of a drone, or of identifying a drone that they see. 
+
+\section{Project Description}
+This project would consist in creating a smartphone app for Android that would interface with the Paparazzi system to reduce the workload for the drone safety pilot. 
+
+This app would enable the pilot to visualize information concerning a registered drone. This app may also be used to monitor and control a fleet of drones. In particular, the pilot should be able to access all relevant information concerning a drone, as well as localize or identify a drone in the sky. The app would also enable the pilot to send orders to a drone from the smartphone. 
+
+It would also be possible for the drone to send a message to the safety pilot. The smartphone would then indicate the position or the direction of the drone. Such messages could be relative to the drone status (e.g. low battery), or the drone environment if said drone was outfitted with sensors. 
+
+Further details concerning this app are still to be determined. 
+%The advantage of making a smartphone app is that a smartphone is easily carried by the pilot on the field. 
+
+\section{Related Work}
+%Google Sky
+Following an aircraft in flight has been the subject of a number of studies over the years. 
+
+Many smartphone based solutions such as FlightAware \cite{FlightAware} or Flight Radar \cite{FlightRadar24} enable the user to know the position, flight status and other information concerning most commercial flights in the world, and follow flights live. 
+
+Drone tracking solutions also exist. For instance ARDrone Flight is the companion app to the Parrot ARDrone for controlling the drone and recording videos \cite{ARDroneFlight,ARDrone}. However, it does not provide visual tracking using the phone's camera, and it is not open-source. 
+
+GoogleSky features tracking. It is a Google app that shows  the celestial sphere on the smartphone screen by linking the screen display with the screen orientation. In the case of this project, the stars of GoogleSky would be replaced by a fleet of micro-drones. 
+
+The apps that currently exist do not integrate drone control, drone monitoring and tracking in a single app. Therefore, even though this project is inspired by existing applications, it is unlike each of those applications.
+
+\section*{Conclusion}
+This project rests on current state-of-the-art developments in the field of drones, and is original, while being modest in size and ambition, making it feasible in the short three month period allocated for this project. It combines networked communications, physical input (phone orientation) and physical output (through the flight systems), thus fits within the context of cyber-physical systems. 
+
+\bibliographystyle{plain}
+\bibliography{ProjectRefs}
+
+\end{document}
