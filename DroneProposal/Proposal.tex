@@ -1,4 +1,4 @@
-\documentclass[10pt,letterpaper]{article}
+\documentclass[11pt,letterpaper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
@@ -36,14 +36,19 @@ This app would enable the pilot to visualize information concerning all register
 
 It would also be possible for the drone to send a message to the safety pilot. The smartphone would then indicate the position or the direction of the drone. Such messages could be relative to the drone status (e.g. low battery), or the drone environment if said drone was outfitted with sensors. 
 
-The final part of this project is to create an vehicular ad-hoc network (VANET) within the flock of drones. The communication system will be based off of current advancements in collective behaviour and may be inspired by existing communication systems such as ADS-B \cite{faaAdsbServices, faaAdsbArchitecture} which allows air-to-air communications as well as air-to-infrastructure communications. 
+The final part of this project is to create an Vehicular ad-hoc Network (VANET) within the flock of drones and test their connectivity and communication. In other terms, there will be a Control Center (laptop/smartphone) that will monitor one of the drones which is designated as a Road Side Unit (RSU) and will communicate with the other drones which are designated as On Board Units (OBUs or nodes). 
+
+The communication system will be based off of current advancements in collective behaviour and may be inspired by existing communication systems such as ADS-B \cite{faaAdsbServices, faaAdsbArchitecture} which allows air-to-air communications as well as air-to-infrastructure communications. 
+The work will be based on existing the existing Paparazzi framework, and will use associated software such as the mission status report module, the real-time plotter (RTPlotter), and the server application (AppServer) \cite{Paparazzi}.
+
+Possible applications for this project include to monitor traffic as to avoid traffic jams where an accident may have occurred, or search and rescue missions where deploying people could be dangerous. 
 
 \section{Related Work}
 Following an aircraft in flight has been the subject of a number of studies over the years. 
 
 Many smartphone based solutions such as FlightAware \cite{FlightAware} or Flight Radar \cite{FlightRadar24} enable the user to know the position, flight status and other information concerning most commercial flights in the world, and follow flights live. 
 
-Drone tracking solutions also exist. For instance ARDrone Flight is the companion app to the Parrot ARDrone for controlling the drone and recording videos \cite{ARDroneFlight,ARDrone}. However, it does not provide visual tracking using the phone's camera, and it is not open-source. 
+Solutions also exist for controlling drones with a smartphone. For instance ARDrone Flight is the companion app to the Parrot ARDrone for controlling the drone and recording videos \cite{ARDroneFlight,ARDrone}. However, it does not provide visual tracking using the phone's camera, and it is not open-source. The PPRZonDroid \cite{PPRZonDroid} is an application that you can use to control Paparazzi aircraft with your android device. However, it only replaces the GCS and the user can only follow the trajectory of a drone on a map. 
 
 GoogleSky \cite{GoogleSky} features tracking. It is a Google app that shows  the celestial sphere on the smartphone screen by linking the screen display with the screen orientation. In the case of this project, the stars of GoogleSky would be replaced by a fleet of micro-drones. 
 
