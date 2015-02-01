@@ -359,10 +359,10 @@
 % use a multiple column layout for up to three different
 % affiliations
 \author{\IEEEauthorblockN{Isabelle Santos}
-\IEEEauthorblockA{A20325602}
+\IEEEauthorblockA{A20325602\\isantos1@hawk.iit.edu}
 \and
 \IEEEauthorblockN{Dheeraj Prajwal Bojja Venkata}
-\IEEEauthorblockA{Axxxxxxxx}}
+\IEEEauthorblockA{A20329437\\prajdheeraj@gmail.com}}
 
 % conference papers do not typically use \thanks and this command
 % is locked out in conference mode. If really needed, such as for
@@ -401,7 +401,7 @@
 
 \begin{abstract}
 %\boldmath
-The safety pilot of a drone can almost only rely on their eyes to determine the state of a drone they are monitoring. In the context for instance of a search and rescue mission, many drones could be involved, and the pilot may lose sight of the drone they are monitoring. This project proposal describes briefly the possibility of designing a smartphone app to monitor and control a fleet of drones with an interface similar to that of GoogleSky.
+The safety pilot of a drone can almost only rely on their eyes to determine the state of a drone they are monitoring. In the context for instance of a search and rescue mission, many drones could be involved, and the pilot may lose sight of the drone they are monitoring, and some drones may go beyond the range of the safety pilot's remote control. This project proposal envisions and describes the design and implementation of a smartphone app to monitor and control a fleet of drones with an interface similar to that of GoogleSky.
 \end{abstract}
 % IEEEtran.cls defaults to using nonbold math in the Abstract.
 % This preserves the distinction between vectors and scalars. However,
@@ -425,44 +425,6 @@ The safety pilot of a drone can almost only rely on their eyes to determine the 
 % creates the second title. It will be ignored for other modes.
 \IEEEpeerreviewmaketitle
 
-
-
-\section{Introduction}
-Paparazzi is a free and open-source software project \cite{Paparazzi} comprising the hardware and software necessary deploy a drone autopilot system. Paparazzi has been used by universities, private companies and drone enthusiasts. 
-
-Paparazzi is articulated around a ground control system (GCS) and the actual drone. The drone is composed of modules for receiving orders from the ground station, modules for sending status reports to the ground station, and flight control systems and actuators. The GCS is generally a computer running the Paparazzi software, with an antenna to emit and receive messages to and from the drone and a standard RC transmitter. 
-
-During the flight of a drone, there are two pilots:
-\begin{itemize}
-\item the GCS operator inputs flight parameters and sees the flight data in real-time. He follows the trajectory of the drone on a map;
-\item the safety pilot observes the drone and holds ready to take command of in case anything unexpected happens. He follows the trajectory of the drone in the sky. 
-\end{itemize}
-
-However, this system has several limitations. The safety pilot communicates with the GCS operator (for instance by talkie-walkie) in order to get the drone flight data. Therefore, the safety pilot does not have real-time information and the transmission can be of poor quality, resulting in incomprehensions. Furthermore, the safety pilot has no way of easily finding the position of a drone, and the safety pilot can not identify a drone that they see without prior knowledge.
-
-Furthermore, the safety pilot usually has only a standard RC model remote control, so typically a pilot only follows one drone at a time. This limits the feasibility of a fleet of drones. 
-
-
-\section{Related Work}
-Following an aircraft in flight has been the subject of a number of studies over the years. 
-
-Many smartphone based solutions such as FlightAware \cite{FlightAware} or Flight Radar \cite{FlightRadar24} enable the user to know the position, flight status and other information concerning most commercial flights in the world, and follow flights live. 
-
-Solutions also exist for controlling drones with a smartphone. For instance ARDrone Flight is the companion app to the Parrot ARDrone for controlling the drone and recording videos \cite{ARDroneFlight,ARDrone}. However, it does not provide visual tracking using the phone's camera, and it is not open-source. The PPRZonDroid \cite{PPRZonDroid} is an application that you can use to control Paparazzi aircraft with your android device. However, it only replaces the GCS and the user can only follow the trajectory of a drone on a map. 
-
-GoogleSky \cite{GoogleSky} features tracking. It is a Google app that shows  the celestial sphere on the smartphone screen by linking the screen display with the screen orientation. In the case of this project, the stars of GoogleSky would be replaced by a fleet of micro-drones. 
-
-Recent studies have also been done on the subject of swarming of ground robots or aerial drones \cite{Vasarhelyi14}, collective behavior, and flying ad-hoc networks (FANET) \cite{VeyPRG14, RoyerPG13}. Many applications for such FANETs are envisionned such as meteorological studies  \cite{hattenberger13}, thermal detection for hang-gliders \cite{eckert2013flying} or search and rescue missions \cite{Cubber13}.
-
-Studies in \cite{Abrassart14, bouachir14} shows how the ad hoc network in the context of unmanned aerial systems (UAS) is a promising solution.
-
-The apps that currently exist do not integrate drone control, drone monitoring and tracking of multiple drones in a single app. Therefore, even though this project is inspired by existing applications, it is unlike each of those applications.
-
-
-\section{Implementation}
-
-
-\section{Tests}
 
 
 % An example of a floating figure using the graphicx package.
@@ -549,20 +511,146 @@ The apps that currently exist do not integrate drone control, drone monitoring a
 
 
 
-\section{Conclusion}
-The conclusion goes here.
+
+\section{Introduction}
+\subsection{Context}
+Paparazzi is a free and open-source software project \cite{Paparazzi} comprising the hardware and software necessary deploy a drone autopilot system. Paparazzi has been used by universities, private companies and drone enthusiasts. 
+
+Paparazzi is articulated around a ground control system (GCS) and the actual drone. The drone is composed of modules for receiving orders from the ground station, modules for sending status reports to the ground station, and flight control systems and actuators. The GCS is generally a computer running the Paparazzi software, with an antenna to emit and receive messages to and from the drone and a standard RC transmitter. 
+
+During the flight of a drone, there are two pilots:
+\begin{itemize}
+\item the GCS operator inputs flight parameters and sees the flight data in real-time. He follows the trajectory of the drone on a map;
+\item the safety pilot observes the drone and holds ready to take command of in case anything unexpected happens. He follows the trajectory of the drone in the sky. 
+\end{itemize}
+
+\subsubsection{Limitations of the current system} 
+\paragraph{Quality of information transmission} The safety pilot communicates with the GCS operator (for instance by talkie-walkie) in order to get the drone flight data. The transmission can be of poor quality, resulting in incomprehensions. If the communication between both operators is cut off, the flight becomes dangerous.
+
+\paragraph{Information reception time} There is a high latency between the moment when the drone sends out information and the moment when the safety pilot receives the information.
+
+\paragraph{Drone locating} The safety pilot has no way of easily finding the position of a drone. If the safety pilot loses sight of a drone, they must go to the GCS, look at the map, and try to spot the drone. 
+
+\paragraph{Drone identification} The safety pilot can not identify a drone that they see without prior knowledge. Two drones may look very similar, and distinguishing them by sight from a distance may be impossible. 
+
+\paragraph{Fleet management} The safety pilot usually has only a standard RC model remote control, so typically a pilot only follows one drone at a time. This limits the feasibility of a fleet of drones. 
+
+\paragraph{Flight range} If a drone flies out of the range of the GCS and the safety pilot's remote control, it can continue to follow its flight plan. However, it is no longer possible to send orders to that drone, nor is it possible to retrieve information. If something unexpected happens when the drone is out of range, the drone could very well get lost, injure people or damage property.
+
+
+\subsection{Presentation}
+This project would consist in creating a smartphone app for Android that would interface with the Paparazzi system to reduce the workload for the drone safety pilot, enable the management of more than one drone at a time, and enable safe flight beyond the range of the GCS under certain conditions. Since the app can be used on a smartphone, it can be carried around easily by the safety pilot for field use. 
+
+This app enables the pilot to visualize information concerning all registered drones. This app may also be used to monitor and control a fleet of drones. In particular, the pilot should be able to access all relevant information concerning a drone, as well as localize or identify a drone in the sky. The app also enables the pilot to send orders to a drone from the smartphone. 
+
+It should also be possible for the drone to send a message to the safety pilot. The smartphone then indicates the position or the direction of the drone. Such messages can be relative to the drone status (e.g. low battery), or the drone environment if said drone is outfitted with sensors. 
+
+The final part of this project is to create an Vehicular ad-hoc Network (VANET) within the flock of drones and test their connectivity and communication. In other terms, there will be a Control Center (laptop/smartphone) that will monitor one of the drones which is designated as a Road Side Unit (RSU) and will communicate with the other drones which are designated as On Board Units (OBUs or nodes). 
+
+The communication system will be based off of current advancements in collective behaviour and may be inspired by existing communication systems such as ADS-B \cite{faaAdsbServices, faaAdsbArchitecture} which allows air-to-air communications as well as air-to-infrastructure communications. 
+The work will be based on existing the existing Paparazzi framework, and will use associated software such as the mission status report module, the real-time plotter (RTPlotter), and the server application (AppServer) \cite{Paparazzi}.
+
+Possible applications for this project include to monitor traffic as to avoid traffic jams where an accident may have occurred, or search and rescue missions where deploying people could be dangerous. 
+
+
+\subsection{Related Work}
+Following an aircraft in flight has been the subject of a number of studies over the years. 
+
+Many smartphone based solutions such as FlightAware \cite{FlightAware} or Flight Radar \cite{FlightRadar24} enable the user to know the position, flight status and other information concerning most commercial flights in the world, and follow flights live. 
+
+Solutions also exist for controlling drones with a smartphone. For instance ARDrone Flight is the companion app to the Parrot ARDrone for controlling the drone and recording videos \cite{ARDroneFlight,ARDrone}. However, it does not provide visual tracking using the phone's camera, and it is not open-source. The PPRZonDroid \cite{PPRZonDroid} is an application that you can use to control Paparazzi aircraft with your android device. However, it only replaces the GCS and the user can only follow the trajectory of a drone on a map. 
+
+GoogleSky \cite{GoogleSky} features tracking. It is a Google app that shows  the celestial sphere on the smartphone screen by linking the screen display with the screen orientation. In the case of this project, the stars of GoogleSky would be replaced by a fleet of micro-drones. 
+
+Recent studies have also been done on the subject of swarming of ground robots or aerial drones \cite{Vasarhelyi14}, collective behavior, and flying ad-hoc networks (FANET) \cite{VeyPRG14, RoyerPG13}. Many applications for such FANETs are envisionned such as meteorological studies  \cite{hattenberger13}, thermal detection for hang-gliders \cite{eckert2013flying} or search and rescue missions \cite{Cubber13}.
+
+Studies in \cite{Abrassart14, bouachir14} shows how the ad hoc network in the context of unmanned aerial systems (UAS) is a promising solution.
+
+The apps that currently exist do not integrate drone control, drone monitoring and tracking of multiple drones in a single app. Therefore, even though this project is inspired by existing applications, it is unlike each of those applications.
+
+
+\section{Implementation}
+The app is divided into four layers
+\begin{itemize}
+\item the user interface,
+\item the model,
+\item the network,
+\item the collective behaviour.
+\end{itemize}
+
+\subsection{User interface}
+This layer consists of what the safety pilots sees and interacts with through their smartphone.
+
+The app has four distinct screens:
+\begin{itemize}
+\item Flight listing: the list of all drones currently tracked by the app
+\item Flight data: all information relevant to a selected drone
+\item Tracking: symbolic representation of the drones over the image taken by the phone camera
+\item Preferences: network connection parameters, selection of warnings to be displayed,...
+\end{itemize}
+
+This layer includes the threads necessary to switch from one screen to another.
+
+\subsection{Model and controller}
+This layer includes all the information specific to each drone and the smartphone device. These are
+\begin{itemize}
+\item the orientation of the smartphone;
+\item the location of the smartphone;
+\item the information from the smartphone's camera;
+\item the flight data for every drone;
+\item the user preferences;
+\item ...
+\end{itemize}
+
+\subsubsection{Drone flight data}
+This is the most important part of the model, since it concerns critical data. The safety pilot makes decisions concerning the drones based on this data. 
+
+The information concerning each drone are transmitted by the parser of the Networks layer. 
+
+\subsection{Networks}
+This layer includes a parser for converting messages received into data usable by the other layers for the GCS-to-drone and the drone-to-drone communications.
+
+The parser does the following tasks:
+\begin{itemize}
+\item establish a connexion;
+\item receive messages;
+\item acknowledge the reception of messages;
+\item process messages;
+\item format the collected data;
+\item transmit the collected data to the other modules.
+\end{itemize}
+
+\subsection{Collective behaviour}
+This layer includes all the rules for the drones to interact amongst themselves.
+
+
+\section{Tests}
+Only the app and the ad hoc network between drones are being tested. It is assumed for this project that Paparazzi and the smartphone are free of bugs. 
+
+The features to be tested include the display of the app on the smartphone, the conformity of the information displayed to the safety pilot, and the communications between drones. 
+
+The Paparazzi software can be used to simulate the flight of drones. Information can be sent to and from the simulated drones in real-time using the network created by AppServer, the server launched by Paparazzi to obtain information from the drones. It is then possible to connect a smartphone to this network and obtain the simulated flight data and send instructions to the simulated drone. 
+
+%For each test involving the simulation of drones, the Paparazzi software must be launched and configured, and a wifi network must be created to connect the Paparazzi AppServer and the smartphone. This includes getting the IP addresses for both in order to configure the parameters of the app. 
+
+\subsection{Tests in a simulated environment}
+
+\subsection{Tests in a real environment}
+
+
+\section{Conclusion and future work}
+Conclusions will be drawn from this project, future work will be envisioned. 
 
 
 
-
-% conference papers do not normally have an appendix
 
 
 % use section* for acknowledgement
 \section*{Acknowledgment}
+The authors would like to thank Xiang-Yang Li.
 
 
-The authors would like to thank...
+%The authors would also like to thank Jonas Gouraud, Juliette Rambourg, Julie Barbarin and Adrien Arnaud from ENAC for their help with using Paparazzi. 
 
 
 
