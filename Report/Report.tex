@@ -592,23 +592,48 @@ The app has four distinct screens:
 This layer includes the threads necessary to switch from one screen to another.
 
 \subsection{Model and controller}
-This layer includes all the information specific to each drone and the smartphone device. These are
+This layer includes all the information specific to each drone and the smartphone device. The main elements of the model are the UAV and the Fleet.
+
+\subsubsection{UAV flight data}
+This is the most important part of the model, since it concerns critical data. The safety pilot makes decisions concerning the drones based on this data. For each drone, the data that we consider is the following:
 \begin{itemize}
-\item the orientation of the smartphone;
-\item the location of the smartphone;
-\item the information from the smartphone's camera;
-\item the flight data for every drone;
-\item the user preferences;
+\item Name, colour and id
+\item Vertical speed
+\item Ground speed: this is the speed of the drone relatively to the local Earth frame
+\item True air speed: this is the speed of the drone relatively to the body of air it is flying through
+\item Orientation characterised by the roll, pitch and heading of the drone
+\item Coordinates of longitude and latitude
+\item Height: this is the distance from the drone to the ground directly under it
+\item Altitude: this is the vertical position of the drone above the mean sea level
+\end{itemize}
+
+The information concerning each drone is transmitted by the parser of the Networks layer, and written to the screen of the User Interface layer on a regular basis. 
+
+\subsubsection{Fleet}
+A fleet contains several drones and is controlled by a surveillance device.
+
+The Fleet class is a doorway between the view and the model. Fleet manages the list of drones which can change dynamically.
+
+\subsubsection{Device data}
+The data regarding the device includes the orientation and location of the phone. This is used in combination with the location of the drone to provide the tracking feature. The following data regarding the device is considered:
+\begin{itemize}
+\item Orientation characterised by the roll, pitch and azimuth of the device
+\item Coordinates of altitude, longitude and latitude
+\item Cone of visibility of the camera
+\end{itemize}
+
+The LocationManager and SensorManager classes of the android library are used to provide this information.
+
+\subsubsection{User preferences}
+The preferences that may be set by the user are of several sorts:
+\begin{itemize}
+\item Network preferences: the user may need to modify the IP address or connexion ports
+\item Warning preferences: the user may want to activate/deactivate certain types of warnings based on the type of mission performed
 \item ...
 \end{itemize}
 
-\subsubsection{Drone flight data}
-This is the most important part of the model, since it concerns critical data. The safety pilot makes decisions concerning the drones based on this data. 
-
-The information concerning each drone are transmitted by the parser of the Networks layer. 
-
 \subsection{Networks}
-This layer includes a parser for converting messages received into data usable by the other layers for the GCS-to-drone and the drone-to-drone communications.
+This layer includes a parser for converting messages received into data usable by the other layers for the device-drone communications.
 
 The parser does the following tasks:
 \begin{itemize}
@@ -620,8 +645,12 @@ The parser does the following tasks:
 \item transmit the collected data to the other modules.
 \end{itemize}
 
+A dedicated thread establishes the connexion with the appServer. Another thread acknowledges the reception of TCP messages.
+
 \subsection{Collective behaviour}
 This layer includes all the rules for the drones to interact amongst themselves.
+
+If two drones are within communication range, they can compute the distance separating them by measuring the time to transmit messages.
 
 
 \section{Tests}
@@ -648,10 +677,6 @@ Conclusions will be drawn from this project, future work will be envisioned.
 % use section* for acknowledgement
 \section*{Acknowledgment}
 The authors would like to thank Xiang-Yang Li.
-
-
-%The authors would also like to thank Jonas Gouraud, Juliette Rambourg, Julie Barbarin and Adrien Arnaud from ENAC for their help with using Paparazzi. 
-
 
 
 
