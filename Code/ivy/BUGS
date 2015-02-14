@@ -1,0 +1,374 @@
+-------------------------------------------------------------------------------------
+multicast rendez vous is not working any more ?!
+
+-------------------------------------------------------------------------------------
+.bound ne fonctionne pas ...
+
+PseudoControleurCPDLC subscribes to ^CPDLC FLIGHT ([^ ]+) ([0-9]+) ([0-9_]+)
+([0-9]{8})([0-9]{6}) dM18 (IAS|MAC) (\d+)
+PseudoControleurCPDLC subscribes to ^CPDLC FLIGHT ([^ ]+) ([0-9]+) ([0-9_]+)
+([0-9]{8})([0-9]{6}) dM(9|10|22|70) (.*)
+PseudoControleurCPDLC connected
+PseudoControleurCPDLC sent 'envoyez les requetes'
+.bound PseudoControleurCPDLC
+PseudoControleurCPDLC has subscribed to: ^CPDLC FLIGHT ([^ ]+) ([0-9]+)
+([0-9_]+) ([0-9]{8})([0-9]{6}) dM(9|10|22|70) (.*)
+total: 1, unbounded:0
+
+-------------------------------------------------------------------------------------
+7 clients on the bus
+-> CDS:AIX
+-> Rejeu
+-> FlightList
+-> FDPS
+-> FlightDisplay
+-> RadarGL:paris:WP1:TC
+-> Scheduler
+.die Rejeu
+Rejeu disconnected 
+untie attempted while 1 inner references still exist at
+/usr/lib/perl5/Tk/Event/IO.pm line 117.
+RadarGL:paris:WP1:TC disconnected 
+FlightDisplay disconnected 
+Exception in thread "Thread-9" FDPS disconnected 
+CDS:AIX disconnected 
+java.lang.ArrayIndexOutOfBoundsException: -1
+   at java.util.Hashtable$Enumerator.nextElement() (/usr/lib/libgcj.so.6.0.0)
+      at fr.dgac.ivy.Ivy.getClientNames(java.util.Hashtable) (Unknown Source)
+         at fr.dgac.ivy.Ivy.removeClient(fr.dgac.ivy.IvyClient) (Unknown
+	 Source)
+	    at fr.dgac.ivy.IvyClient.run() (Unknown Source)
+	       at java.lang.Thread.run() (/usr/lib/libgcj.so.6.0.0)
+	       Scheduler disconnected 
+
+
+
+-------------------------------------------------------------------------------------
+Won't do list:
+  * implement an interface allowing different regexps implementations, since
+    it exists in jdk 1.4.1 !, while keeping in mind the platform compatibility
+    -> nooooo ( jakarta regexps now )
+-------------------------------------------------------------------------------------
+
+TODO List:
+  * try the "many threads option" for sending messages
+  * make a ssh tunnel
+
+-------------------------------------------------------------------------------------
+Known bugs:
+
+réf: [WFC01] yann
+  is WaitForClient still a bit buggy ?
+  to reproduce the bug, run test/WFC.java
+  it can stay hung for a while ( debian sid, gcj, kaffe or debian sid+
+  jdk1.5). I guess it has to do with the bus stop in WFCClient *before* the
+  hanshake is finished in other Clients, so that the die message cannot be
+  sent.
+
+  launching 3 clients
+  waiting for them
+  sending them' a die message (3 clients)
+  leaving the bus
+  ... stuck
+  sending a SIGQUIT to the JAVA VM shows a couple of threads hung:
+  Full thread dump Java HotSpot(TM) Server VM (1.5.0-beta2-b51 mixed mode):
+    "DestroyJavaVM" prio=1 tid=0x8e300b10 nid=0x24cd waiting on condition [0x00000000..0xbfffc840]
+  "Thread-25" prio=1 tid=0x8e15ecc0 nid=0x24f4 runnable [0x8d034000..0x8d0346c0]
+        at java.net.SocketInputStream.socketRead0(Native Method)
+        at java.net.SocketInputStream.read(SocketInputStream.java:129)
+        at sun.nio.cs.StreamDecoder$CharsetSD.readBytes(StreamDecoder.java:411)
+        at sun.nio.cs.StreamDecoder$CharsetSD.implRead(StreamDecoder.java:453)
+        at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:183)
+        - locked <0xaef40bd8> (a java.io.InputStreamReader)
+        at java.io.InputStreamReader.read(InputStreamReader.java:167)
+        at java.io.BufferedReader.fill(BufferedReader.java:136)
+        at java.io.BufferedReader.readLine(BufferedReader.java:299)
+        - locked <0xaef40bd8> (a java.io.InputStreamReader)
+        at java.io.BufferedReader.readLine(BufferedReader.java:362)
+        at fr.dgac.ivy.IvyClient.run(IvyClient.java:328)
+        at java.lang.Thread.run(Thread.java:595)
+  "Thread-24" prio=1 tid=0x08257840 nid=0x24f3 runnable [0x8d635000..0x8d635840]
+        at java.net.SocketInputStream.socketRead0(Native Method)
+        at java.net.SocketInputStream.read(SocketInputStream.java:129)
+        at sun.nio.cs.StreamDecoder$CharsetSD.readBytes(StreamDecoder.java:411)
+        at sun.nio.cs.StreamDecoder$CharsetSD.implRead(StreamDecoder.java:453)
+        at sun.nio.cs.StreamDecoder.read(StreamDecoder.java:183)
+        - locked <0xaef72008> (a java.io.InputStreamReader)
+        at java.io.InputStreamReader.read(InputStreamReader.java:167)
+        at java.io.BufferedReader.fill(BufferedReader.java:136)
+        at java.io.BufferedReader.readLine(BufferedReader.java:299)
+        - locked <0xaef72008> (a java.io.InputStreamReader)
+        at java.io.BufferedReader.readLine(BufferedReader.java:362)
+        at fr.dgac.ivy.IvyClient.run(IvyClient.java:328)
+        at java.lang.Thread.run(Thread.java:595)
+  looks like [KAFFCLOSE05], with a lock on socket reading
+  see: http://javafaq.nu/java/archive_newsletters-2/33.shtml
+  the idea is to have the close performed by another thread, or to to use a time out
+
+
+réf: [KAFFCLOSE05] yann
+  make nl
+  compiled with gcj, ran with Kaffe, hangs on app.close() in Ivy.java... at
+  bus.stop() . Kernel 2.6.10, sid glibc bleeding edge... I should investigate
+  further for compatibility's sake
+  it's not possible to run Bus.stop() on a SMP machine ?
+  trying Newline on 100000 tests
+  sending 100000 protected newlines
+  received 100000 [
+  ]
+  sending 100000 unprotected newlines
+  received 100000 [ ]
+  with protection 3526ms, without 2632ms
+  Dumping live threads:
+    `Thread-1' tid 0x848100c, status SUSPENDED flags ALARM BLOCKEDEXTERNAL blocked: reading from fd 7
+    `Thread-2' tid 0x869c00c, status SUSPENDED flags ALARM BLOCKEDEXTERNAL INTERRUPTED blocked: reading from fd 6
+    `gc' tid 0x83df00c, status SUSPENDED flags DONTSTOP BLOCKEDEXTERNAL blocked
+    `finaliser' tid 0x839e00c, status SUSPENDED flags DONTSTOP BLOCKEDEXTERNAL blocked
+    `main' tid 0x811a018, status SUSPENDED flags NOSTACKALLOC DONTSTOP BLOCKEDEXTERNAL blocked
+
+réf: [BUGYANN]
+  perte des arguments ...
+  jdk 1.4.2_04 sous OSX peut amener à
+  [1:40:51 PM] 3/5 packets received (3)
+  [1:40:51 PM] sender has sent all its packets, waiting for a die message
+  -->IvyClient[0] MSreceive (remote MSsend)<--  string array 0 elements:
+  -->IvyClient[0] MSreceive (remote MSsend)<--  string array 2 elements: (5) (aaaaaaaaaa)
+  et du coup un ArrayOutOfBoundsException  dans le receive
+  c'est le cas en async sur le test Async uniquement, depuis les jakarta
+  regexp...
+
+
+réf: [BUGXZ]
+  on debian woody, using Kaffe, one cannot build the jar file ( problem in
+  manifest ? ) beware, when building java for woody, to use the regexp.jar and getopt.jar
+  built for your version of java ( Major/Minor version mismatch ... )
+
+  make async, stack overflow in jakarta regexp
+
+réf: [BUGXX]
+
+   Using the Blackdown Linux jdk 1.1.8_v3, the console is flooded with the
+   following messages :
+   -->ivy<-- Error IvyServer exception:  Socket closed
+   Ivy server socket reader caught an exception Socket closed
+   java.net.SocketException: Socket closed
+   at java.net.PlainSocketImpl.close(PlainSocketImpl.java:408)
+   at java.net.SocketImpl.reset(SocketImpl.java:227)
+   at java.net.ServerSocket.implAccept(ServerSocket.java:207)
+   at java.net.ServerSocket.accept(ServerSocket.java:181)
+   at fr.dgac.ivy.Ivy.run(Ivy.java:441)
+   at java.lang.Thread.run(Thread.java)
+   It seems to be a bug in the JVM implementation. This is reproduced with the
+   -native and -green flags .
+   It doesn't happen with the 1.1.7A sun JDK on a solaris box.
+
+réf: [BUGXY]
+
+   Using the blackdown jdk 1.2.2
+   Classic VM (build Linux_JDK_1.2.2_FCS, native threads, sunwjit)
+   The program sometimes hang or head to a SIGSEGV ( extract below )
+   SIGSEGV   11*  segmentation violation
+    si_signo [11]: SIGSEGV   11*  segmentation violation
+    si_errno [0]: Succès
+    si_code [1]: SEGV_MAPERR [addr: 0x890096C]
+        stackpointer=0xbe9ff234
+    Full thread dump Classic VM (Linux_JDK_1.2.2_FCS, native threads):
+    "Thread-6" (TID:0x40efc090, sys_thread_t:0x8219e78, state:CW, native
+    ID:0x4000) prio=5
+    "Thread-3" (TID:0x40efc030, sys_thread_t:0x821ab88, state:R, native
+    ID:0x20009) prio=5
+        at fr.dgac.ivy.IvyClient.<init>(IvyClient.java, Compiled Code)
+        at fr.dgac.ivy.Ivy.addClient(Ivy.java, Compiled Code)
+    I don't know if it is the jvm thread implementation or my code. I will
+    eventually investigate.
+
+-------------------------------------------------------------------------------------
+Fixed:
+
+1.2.8
+
+réf: [YJnul05]
+$ java -classpath classes:../lib/ivy-java.jar Request -b 228.1.2.3:4567
+launching 5 Computers
+waiting for them
+going to sleep 2 seconds
+Computer1 sending result, id: ID<RequestTest0:1120682288045:-1458125806>, a:3,
+b:4
+Computer4 sending result, id: ID<RequestTest0:1120682288045:-1458125806>, a:3,
+b:4
+going to sleep 2 seconds
+result received: 7
+Computer3 sending result, id: ID<RequestTest0:1120682288045:-1458125806>, a:3,
+b:4
+Computer2 sending result, id: ID<RequestTest0:1120682288045:-1458125806>, a:3,
+b:4
+Computer0 sending result, id: ID<RequestTest0:1120682288045:-1458125806>, a:3,
+b:4
+Exception in thread "Thread-18" java.lang.NullPointerException
+        at fr.dgac.ivy.Ivy.sendMsg(Ivy.java:326)
+        at Request$Computer.receive(Request.java:63)
+        at fr.dgac.ivy.SelfIvyClient.callCallback(SelfIvyClient.java:115)
+        at fr.dgac.ivy.IvyClient.newParseMsg(IvyClient.java:520)
+        at fr.dgac.ivy.IvyClient.run(IvyClient.java:328)
+        at java.lang.Thread.run(Thread.java:595)
+awaking and leaving the bus
+
+Le même ...
+Computer3 sending result, id: ID<RequestTest0:1120683401604:-934870068>, a:3,
+b:4
+Exception in thread "Thread-22" java.lang.NullPointerException
+        at fr.dgac.ivy.Ivy.removeClient(Ivy.java:654)
+        at fr.dgac.ivy.Ivy.stop(Ivy.java:273)
+        at Request$Computer.receive(Request.java:65)
+        at fr.dgac.ivy.SelfIvyClient.callCallback(SelfIvyClient.java:115)
+        at fr.dgac.ivy.IvyClient.newParseMsg(IvyClient.java:520)
+        at fr.dgac.ivy.IvyClient.run(IvyClient.java:328)
+        at java.lang.Thread.run(Thread.java:595)
+Exception in thread "Thread-31" java.lang.NullPointerException
+        at fr.dgac.ivy.Ivy.removeClient(Ivy.java:654)
+        at fr.dgac.ivy.Ivy.stop(Ivy.java:273)
+        at Request$Computer.receive(Request.java:65)
+        at fr.dgac.ivy.SelfIvyClient.callCallback(SelfIvyClient.java:115)
+        at fr.dgac.ivy.IvyClient.newParseMsg(IvyClient.java:520)
+        at fr.dgac.ivy.IvyClient.run(IvyClient.java:328)
+        at java.lang.Thread.run(Thread.java:595)
+awaking and leaving the bus
+
+
+  réf: [bugFJ], start(), stop(), start() failed, added a new test StopStart in
+ 
+  réf: [none]
+  on the following kaffe version, tests sometimes fail
+  Kaffe Virtual Machine
+  Copyright (c) 1996-1999
+  Transvirtual Technologies, Inc.  All rights reserved
+  Engine: Just-in-time v3   Version: 1.0.5   Java Version: 1.1
+
+  make test2:
+  kaffe -DIVYBUS=224.5.6.7:8910 -classpath .:../lib/ivy-java.jar:/usr/share/kaffe/Klasses.jar BenchLocal -t 2 -d 0
+  [...]
+  * [9:21:53 AM] BUS2 left
+  * [9:21:53 AM] BUS1 left
+  * [9:21:53 AM] BUS2 left
+  Dumping live threads:
+  `Thread-8' tid 0x837b010, status SUSPENDED flags
+   blocked@0x8353510 (0x837b010->|)
+   `gc' tid 0x81e0010, status SUSPENDED flags
+    blocked@0x81abdc0 (0x81e0010->|)
+    `finaliser' tid 0x81d7010, status SUSPENDED flags
+     blocked@0x81abd90 (0x81d7010->|)
+     Deadlock: all threads blocked on internal events
+     make: *** [test2] Abandon
+ the tests directory
+
+ fixed: it was a sleep(0) hanging in Kaffe ...
+ http://lists.gnu.org/archive/html/classpath-patches/2004-12/msg00223.html
+
+1.2.7
+
+  réf: none, unbind déconnait (Mathieu Raynal)
+  réf: [BUGMATT?], bug perl implementation (Jean Paul)
+       concurrent connexion leading to noone or double connexion ...
+       to reproduce: with Kaffe on a SMP machine, do the tests,
+       it should be the same bug as FJ's Ipaq bug
+
+1.2.4
+
+  réf: [BUG J007] incorrect handling of faulty remote Ivy agents
+    for exemple, bad UDP broadcasts, or wrong regexps.
+
+  réf: [BUG J006]
+  *  incorrect notification of agent departure
+    $ java -DIVY_DEBUG fr.dgac.ivy.Probe
+    $ ivyprobe
+    and ^C the ivyprobe results in :
+    IVYPROBE connected
+    -->IvyClient JPROBE:IVYPROBE<-- readline null ! leaving the thead
+    -->IvyClient JPROBE:IVYPROBE<-- normally Disconnected from IVYPROBE
+    -->IvyClient JPROBE:IVYPROBE<-- Thread stopped
+   The 1.2.4 releases produces a IVYPROBE disconnected
+
+  réf: [BUG J005]
+  * better handling of non Ivy broadcast messages
+    $ jprobe
+    $ echo coucou | nc -q 0 -u -b 127.255.255.255 2010
+    throws a numberformatexception and stays in a unstable mode for the
+    relevant domain.
+
+1.2.2
+  - java fr.dgac.ivy.Probe
+  - ivyprobe, quitte ivyprobe
+    il restait une thread IvyClient qui boucle  en lecture. Bug reported by Damien
+    Figarol
+  - JDK1.1.7A (Sun) Method add(java.lang.Object) not found in class
+    java.util.Vector. -> replaced by addElement , the add(Object) was included
+    in jdk1.2. The System.setProperty was included in jdk1.2. I switched back
+    to the old constructs
+
+1.2.1
+  - bus.start(null)
+  - java -DIVY_PING -DIVY_PING -classpath ../lib/ivy-java.jar:. BenchLocal -t 2 -d 100
+    créé une nullpointerexception java.lang.NullPointerException
+    at fr.dgac.ivy.Ivy.stop(Ivy.java:157)
+    at BenchLocal$RML.receive(BenchLocal.java:87)
+    at fr.dgac.ivy.Ivy.callCallback(Ivy.java:348)
+    at fr.dgac.ivy.IvyClient.newParseMsg(IvyClient.java:361)
+    at fr.dgac.ivy.IvyClient.run(IvyClient.java:191)
+    at java.lang.Thread.run(Thread.java:484)
+    fixed a condition when a bus was requested to be stopped even before
+    having started its thread
+
+1.2.0
+   - implement .die in Probe ( to get the same behavior as ivy-c ivyprobe ) .
+     Done
+   - Probe doesn't send empty strings -> it does now
+   - the Unitary test fr.dgac.ivy.Ivy main() fails with jdk1.3, but succeeds with 1.4
+     it means that when a remote client disconnects brutally, the IvyClient and IvyWatcher
+     Threads are still hanging, ready for a new connexion !
+     In jdk1.3.0, it works whithin jdb but not as a single application
+     -> fixed with a new setSoTimeout(TIMEOUTLENGTH) on each socket.
+
+   - jdk1.4 DEBUG TCP socket reader caught an exception Socket closed on Ivy.close()
+   - if a remote client disconnect brutally ( broken pipe ), the BufferedReader
+     takes time to propagate the IOException. It means we are not aware of the
+     problem before 2 or 3 messages ( Alexandre Lemort )
+     there is a fix in IvyClient, but this is part of the TCP protocol. I will
+     receive the timeout when I try to write on the client. To circumvent this, I
+     have implemented an extention in the Ivy protocol with 2 new messages, Ping
+     and Pong. This is Ivy-java only, and and experimental feature.
+   - when a Ivy bus sends a die message, he dies instead of making the other leave
+  * 1.0.11: received an exception: IvyClient.sendBuffer.write failed: Relais brisé (pipe)
+  It happens while sending messages once a remote client has disconnected
+  ( fixed in 1.0.12 )
+
+-------------------------------------------------------------------------------------
+Not a bug ?
+
+  if you send a msg just after the start, it is possible that the message
+  won't be sent. this is *not* a bug, but, hmmm, a feature. In fact, when you
+  do start(), it triggers different threads, the broadcasts are sent, and it
+  is possible that nobody has answered this broadcast by the time you start
+  sending messages. Try adding an IvyApplicationListener with a callback on
+  connect(IvyClient) to trigger the launching of messages
+
+  lun jan  6 16:12:11 CET 2003 (Yannick)
+  If you bind to a Start message after invoking the Ivy.start() method, it is
+  possible that you will miss the start. Be sure to check that all static bindMsg()
+  are done before the start, in order not to miss a message.
+  This is *especially* true when writing benchMarks
+
+  bus domain shortcuts ( 10:3456 instead of 10.255.255.255:3456  ) doesnt work
+  for UDP broadcast on my development environment. It's okay in multicast (Yannick Jestin)
+  It's a matter of network topography, not of shortcut processing.
+
+  Using the regression tests on the following platforms:
+  - Solaris: I've got a problem to make it run on the default local Domain
+  (127:2010). But this is not limited to the java ivy port !
+  success with jdk1.1.7A, on jdk1.2 , j2sdk1.3 and 1.4 with a multicast domain or a valid
+  UDP broadcast domain . I guess it's a routing problem once again :-\
+  - GNU/linux: ok with jdk1.3 and jdk1.4
+  - windows:  I don't know how to write tests
+
+  lun jan  6 16:13:30 CET 2003 (Yannick)
+  disconnect() is not called when we send a "die" command to the remote IvyClient
+  It is normal. disconnect is called when we are issued a die command.
